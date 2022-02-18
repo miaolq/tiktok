@@ -1,0 +1,26 @@
+{
+  "name": "TikTok Auto Next",
+  "description": "TikTok Auto Next",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": ["https://*/"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/images/tiktok.png",
+      "32": "/images/tiktok.png",
+      "48": "/images/tiktok.png",
+      "128": "/images/tiktok.png"
+    }
+  },
+  "icons": {
+    "16": "/images/tiktok.png",
+    "32": "/images/tiktok.png",
+    "48": "/images/tiktok.png",
+    "128": "/images/tiktok.png"
+  }
+}
