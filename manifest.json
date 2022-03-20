@@ -6,10 +6,10 @@
   "background": {
     "service_worker": "service-worker.js"
   },
-  "permissions": ["tabs", "scripting", "storage"],
-  "host_permissions": ["https://*/"],
+  "permissions": ["declarativeContent", "storage", "scripting"],
   "action": {
     "default_popup": "popup.html",
+    "default_title": "",
     "default_icon": {
       "16": "/images/tiktok.png",
       "32": "/images/tiktok.png",

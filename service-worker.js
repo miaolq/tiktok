@@ -1,30 +1,49 @@
-function log(...rest) {
-  return console.log(...rest)
+const keys = {
+  autoNext: 'autoNext',
 }
 
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true }
-  let [tab] = await chrome.tabs.query(queryOptions)
-  return tab
-}
+chrome.runtime.onInstalled.addListener(async details => {
+  console.log('extension installed', details)
+  // 默认disable
+  chrome.action.disable()
 
-chrome.runtime.onInstalled.addListener(async () => {
-  log('extension installed')
-  //   const tab = await getCurrentTab()
-  //   log(tab)
-})
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
+    chrome.declarativeContent.onPageChanged.addRules([
+      {
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostSuffix: '.tiktok.com' },
+            css: ['[data-e2e="arrow-right"]'],
+          }),
+        ],
+        // 作用类似enable
+        actions: [new chrome.declarativeContent.ShowAction()],
+      },
+    ])
+  })
 
-chrome.tabs.onUpdated.addListener(async (...rest) => {
-  log('tab update', rest)
-  const [tabId, changeInfo, tab] = rest
-  if (/https:\/\/www.tiktok.com\/.+\/video\//.test(tab.url)) {
-    log('onUpdate match')
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      function: autoNext,
-    })
+  const autoNext = await chrome.storage.local.get(keys.autoNext)
+  if (autoNext) {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id },
+        function: autoNext,
+        // args:[]
+        // files:[] // only support one file
+      },
+      results => {}
+    )
   }
 })
+
+// chrome.tabs.onUpdated.addListener(async (...rest) => {
+//   log('tab update', rest)
+//   const [tabId, changeInfo, tab] = rest
+//   if (/https:\/\/www.tiktok.com\/.+\/video\//.test(tab.url)) {
+//     log('onUpdate match')
+
+//   }
+// })
 
 function autoNext() {
   if (!window.autoNextFn) {
