@@ -1,60 +1,34 @@
-const keys = {
-  autoNext: 'autoNext',
+const onIcons = {
+  16: '/images/on16.png',
+  32: '/images/on32.png',
+  48: '/images/on48.png',
+  128: '/images/on128.png',
+}
+const offIcons = {
+  16: '/images/off16.png',
+  32: '/images/off32.png',
+  48: '/images/off48.png',
+  128: '/images/off128.png',
 }
 
-chrome.runtime.onInstalled.addListener(async details => {
-  console.log('extension installed', details)
-  // 默认disable
-  chrome.action.disable()
-
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
-    chrome.declarativeContent.onPageChanged.addRules([
-      {
-        conditions: [
-          new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostSuffix: '.tiktok.com' },
-            css: ['[data-e2e="arrow-right"]'],
-          }),
-        ],
-        // 作用类似enable
-        actions: [new chrome.declarativeContent.ShowAction()],
-      },
-    ])
-  })
-
-  const autoNext = await chrome.storage.local.get(keys.autoNext)
-  if (autoNext) {
-    chrome.scripting.executeScript(
-      {
-        target: { tabId: tab.id },
-        function: autoNext,
-        // args:[]
-        // files:[] // only support one file
-      },
-      results => {}
-    )
-  }
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.clear()
 })
 
-// chrome.tabs.onUpdated.addListener(async (...rest) => {
-//   log('tab update', rest)
-//   const [tabId, changeInfo, tab] = rest
-//   if (/https:\/\/www.tiktok.com\/.+\/video\//.test(tab.url)) {
-//     log('onUpdate match')
+chrome.action.onClicked.addListener(async () => {
+  const open = (await chrome.storage.local.get('autoNext')).autoNext
 
-//   }
-// })
-
-function autoNext() {
-  if (!window.autoNextFn) {
-    window.autoNextFn = e => {
-      const nextArrow = document.querySelector('[data-e2e="arrow-right"]')
-      console.log('next', nextArrow, e)
-      if (e.target.tagName === 'VIDEO' && nextArrow) {
-        nextArrow.click()
-      }
-    }
+  if (open) {
+    chrome.storage.local.set({ autoNext: !open })
+    chrome.action.setTitle({ title: 'click to enable auto next' })
+    chrome.action.setIcon({
+      path: offIcons,
+    })
+  } else {
+    chrome.storage.local.set({ autoNext: !open })
+    chrome.action.setTitle({ title: 'click to disable auto next' })
+    chrome.action.setIcon({
+      path: onIcons,
+    })
   }
-
-  document.addEventListener('ended', window.autoNextFn, true)
-}
+})
