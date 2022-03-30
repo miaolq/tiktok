@@ -11,8 +11,19 @@ const offIcons = {
   128: '/images/off128.png',
 }
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async detail => {
   chrome.storage.local.clear()
+  chrome.storage.local.set({ autoNext: true })
+  chrome.action.setTitle({ title: 'Click to disable autoplay' })
+  chrome.action.setIcon({
+    path: onIcons,
+  })
+
+  if (detail.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+    chrome.tabs.create({
+      url: 'onboarding.html',
+    })
+  }
 })
 
 chrome.action.onClicked.addListener(async () => {
@@ -20,13 +31,13 @@ chrome.action.onClicked.addListener(async () => {
 
   if (open) {
     chrome.storage.local.set({ autoNext: !open })
-    chrome.action.setTitle({ title: 'click to enable auto next' })
+    chrome.action.setTitle({ title: 'Click to enable autoplay' })
     chrome.action.setIcon({
       path: offIcons,
     })
   } else {
     chrome.storage.local.set({ autoNext: !open })
-    chrome.action.setTitle({ title: 'click to disable auto next' })
+    chrome.action.setTitle({ title: 'Click to disable autoplay' })
     chrome.action.setIcon({
       path: onIcons,
     })

@@ -4,7 +4,9 @@
   "description": "",
   "main": "popup.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "zip -r -b dist dist/autoNext.zip service-worker.js manifest.json content-script.js onboarding.html images/",
+    "unzip": "unzip -d dist -o dist/autoNext.zip"
   },
   "repository": {
     "type": "git",
